@@ -6,24 +6,17 @@
 		Object.defineProperty(HTMLScriptElement.prototype, 'src', {
 			set: function(url) {
 				if (url.indexOf('http://cache.m.iqiyi.com/jp/tmts/') === 0) {
-					if (document['tmts'] == undefined) {
-						// 第一次请求
-						document['tmts'] = 1;
-						var xhr = new XMLHttpRequest;
-						xhr.open('GET', url);
-						xhr.onreadystatechange = function() {
-							if (this.readyState == 4) {
-								var regexp = /(\({.*}\))/;
-								var data = eval(regexp.exec(this.responseText)[1]);
-								var url = data.data.m3u;
-								var video = document.getElementById('video');
-								video.src = url;
-								video.play();
+					if (!window._jsonp1) {
+						window._jsonp1 = window.jsonp1;
+						window.jsonp1 = function(data) {
+							if (data.data && data.data.vipInfo) {
+								data.status = 'A00015';
+								data.data.ds = 'A00015';
+								console.log(data);
 							}
+							return window._jsonp1(data);
 						};
-						xhr.send();
 					}
-					return;
 				}
 				setter.apply(this, Array.prototype.slice.call(arguments));
 			}
