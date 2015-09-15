@@ -23,8 +23,25 @@
 		});
 	};
 
-	document.documentElement.setAttribute('onreset', '(' + func + ')()');
-	document.documentElement.dispatchEvent(new Event('reset'));
-	document.documentElement.removeAttribute('onreset');
+	var observer = new MutationObserver(function(mutations, observer) {
+		mutations.forEach(function(mutation) {
+			for (var index = 0; index < mutation.addedNodes.length; ++index) {
+				var node = mutation.addedNodes.item(index);
+				if (node.tagName == 'HEAD') {
+					var script = document.createElement('script');
+					script.innerHTML = '(' + func.toString() + ')()';
+					if (node.firstChild) {
+						node.insertBefore(script, node.firstChild);
+					} else {
+						node.appendChild(script);
+					}
+					observer.disconnect();
+					break;
+				}
+			}
+		});
+	});
+
+	observer.observe(document.documentElement, {childList: true, subtree: true});
 })();
 

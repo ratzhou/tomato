@@ -23,6 +23,11 @@
 					}
 				}
 			}
+			window._langs.ready = true;
+
+			if ($('#language-selector').length > 0) {
+				onVideoInfoReady();
+			}
 		}
 	});
 })();
@@ -42,10 +47,13 @@
 						if (!BuildVideoInfo.old_response) {
 							BuildVideoInfo.old_response = BuildVideoInfo.response;
 							BuildVideoInfo.response = function (a) {
-								a.data.trial = {
-									type: 'episodes',
-									time: 999999
-								};
+								if (a.data.stream[a.data.stream.length - 1].stream_type.indexOf('flv') == -1) {
+									a.data.trial = {
+										type: 'episodes',
+										time: 999999
+									};
+								}
+
 								var ret = BuildVideoInfo.old_response(a);
 								if (checkSrc) {
 									checkSrc = function(){};
@@ -69,8 +77,25 @@
 		})();
 	};
 	
-	document.documentElement.setAttribute('onreset', '(' + func + ')()');
-	document.documentElement.dispatchEvent(new Event('reset'));
-	document.documentElement.removeAttribute('onreset');
+	var observer = new MutationObserver(function(mutations, observer) {
+		mutations.forEach(function(mutation) {
+			for (var index = 0; index < mutation.addedNodes.length; ++index) {
+				var node = mutation.addedNodes.item(index);
+				if (node.tagName == 'HEAD') {
+					var script = document.createElement('script');
+					script.innerHTML = '(' + func.toString() + ')()';
+					if (node.firstChild) {
+						node.insertBefore(script, node.firstChild);
+					} else {
+						node.appendChild(script);
+					}
+					observer.disconnect();
+					break;
+				}
+			}
+		});
+	});
+
+	observer.observe(document.documentElement, {childList: true, subtree: true});
 })();
 

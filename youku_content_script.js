@@ -1,5 +1,12 @@
 
 (function() {
+	function onVideoInfoReady() {
+		for (var lang in window._langs) {
+			$('#language-selector').append('<option value="' + lang + '">' + lang + '</option>');
+		}
+		$('#language-selector').change();
+	}
+
 	// 在页面上保存扩展id
 	$('body').append('<div id="__tomato__"></div>');
 	$('#__tomato__').attr('extension_id', chrome.runtime.id);
@@ -75,9 +82,8 @@
 		$('#type-selector').change();
 	});
 
-	for (var lang in window._langs) {
-		$('#language-selector').append('<option value="' + lang + '">' + lang + '</option>');
+	if (window._langs.ready) {
+		onVideoInfoReady();
 	}
-	$('#language-selector').change();
 })();
 
