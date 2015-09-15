@@ -1,4 +1,11 @@
 
+function onVideoInfoReady() {
+	for (var lang in window._langs) {
+		$('#language-selector').append('<option value="' + lang + '">' + lang + '</option>');
+	}
+	$('#language-selector').change();
+}
+
 (function() {
 	// 初始化页面消息监听器
 	window._langs = {};
