@@ -12,7 +12,6 @@
 							if (data.data && data.data.vipInfo) {
 								data.status = 'A00015';
 								data.data.ds = 'A00015';
-								console.log(data);
 							}
 							return window._jsonp1(data);
 						};

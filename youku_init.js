@@ -1,6 +1,9 @@
 
 function onVideoInfoReady() {
 	for (var lang in window._langs) {
+		if (lang == 'ready') {
+			continue;
+		}
 		$('#language-selector').append('<option value="' + lang + '">' + lang + '</option>');
 	}
 	$('#language-selector').change();
