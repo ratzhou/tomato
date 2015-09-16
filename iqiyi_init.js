@@ -6,15 +6,19 @@
 		Object.defineProperty(HTMLScriptElement.prototype, 'src', {
 			set: function(url) {
 				if (url.indexOf('http://cache.m.iqiyi.com/jp/tmts/') === 0) {
-					if (!window._jsonp1) {
-						window._jsonp1 = window.jsonp1;
-						window.jsonp1 = function(data) {
-							if (data.data && data.data.vipInfo) {
-								data.status = 'A00015';
-								data.data.ds = 'A00015';
-							}
-							return window._jsonp1(data);
-						};
+					var match = /callback=([^&]+)/.exec(url);
+					if (match) {
+						var callback = match[1];
+						if (!window['_' + callback] && window[callback]) {
+							window['_' + callback] = window[callback];
+							window[callback] = function(data) {
+								if (data.data && data.data.vipInfo) {
+									data.status = 'A00015';
+									data.data.ds = 'A00015';
+								}
+								return window['_' + callback](data);
+							};
+						}
 					}
 				}
 				setter.apply(this, Array.prototype.slice.call(arguments));
