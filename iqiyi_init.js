@@ -12,7 +12,7 @@
 						if (!window['_' + callback] && window[callback]) {
 							window['_' + callback] = window[callback];
 							window[callback] = function(data) {
-								if (data.data && data.data.vipInfo) {
+								if (data.data) {
 									data.status = 'A00015';
 									data.data.ds = 'A00015';
 								}
